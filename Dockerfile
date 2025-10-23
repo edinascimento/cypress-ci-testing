@@ -1,12 +1,10 @@
-FROM cypress/included:14.0.0
+FROM cypress/included:latest
 
 WORKDIR /e2e
 
 COPY . .
 
 RUN npm install
-
-RUN npm install -g mochawesome mochawesome-merge mochawesome-report-generator
 
 RUN mkdir -p cypress/reports
 
