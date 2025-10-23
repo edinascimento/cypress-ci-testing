@@ -3,6 +3,7 @@ pipeline {
 
 	environment {
 		PROJECT_DIR = "cypress-ci-testing"
+		CYPRESS_IMAGE = "cypress/included:13.12.0"
 	}
 
 	stages {
@@ -15,22 +16,20 @@ pipeline {
 
 		stage('Run Cypress inside Docker') {
 			steps {
-				// Roda Cypress dentro de um container Docker
+				// Roda Cypress dentro do container usando shell
 				sh '''
-				docker run --rm \
-				  --entrypoint sh \
-				  -v "$PWD/${PROJECT_DIR}:/e2e" \
-				  -w /e2e \
-				  cypress/included:15.5.0 \
-				  -c "npm ci && npx cypress run --browser chrome --headless"
-				'''
+                docker run --rm \
+                    -v "$PWD/${PROJECT_DIR}:/e2e" \
+                    -w /e2e \
+                    $CYPRESS_IMAGE \
+                    sh -c "npm ci && npx cypress run --browser chrome --headless"
+                '''
 			}
 		}
 	}
 
 	post {
 		always {
-			// Salva vídeos e screenshots
 			archiveArtifacts artifacts: "${PROJECT_DIR}/cypress/videos/**, ${PROJECT_DIR}/cypress/screenshots/**", allowEmptyArchive: true
 		}
 	}
