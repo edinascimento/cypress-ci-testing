@@ -35,13 +35,13 @@ pipeline {
 			steps {
 				script {
 					def workspacePath = pwd()
-					sh '''
+					sh """
 					docker run --rm \
-					  -v "${workspacePath}:/app" \
-					  -w /app \
+					  -v "${workspacePath}:/e2e" \
+					  -w /e2e \
 					  --entrypoint sh \
 					  ${CYPRESS_IMAGE} -c "sh run_cypress.sh"
-					'''
+					"""
 				}
 			}
 		}
