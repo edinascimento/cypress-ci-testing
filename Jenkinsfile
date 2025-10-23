@@ -1,19 +1,17 @@
 pipeline {
 	agent any
+
+	tools {nodejs "nodejs24"}
+
 	stages {
-		stage("build") {
+		stage("Dependencies") {
 			steps {
-				echo 'building de application'
+				sh 'npm i'
 			}
 		}
-		stage("test") {
+		stage("e2e Tests") {
 			steps {
-				echo 'testing the application...'
-			}
-		}
-		stage("deploy") {
-			steps {
-				echo 'deploying the application...'
+				sh 'npm run cy:ci'
 			}
 		}
 	}
