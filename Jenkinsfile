@@ -17,10 +17,10 @@ pipeline {
 		stage('Run Cypress Tests') {
 			steps {
 				sh '''
-                docker run --name cypress-container cypress-tests:latest
-                docker cp cypress-container:/e2e/cypress/videos ./cypress/ || true
-                docker cp cypress-container:/e2e/cypress/screenshots ./cypress/ || true
-                docker rm cypress-container
+                mkdir -p cypress/reports
+                docker run --rm \
+                  -v $(pwd)/cypress/reports:/e2e/cypress/reports \
+                  cypress-tests:latest
              '''
 			}
 		}
@@ -28,7 +28,12 @@ pipeline {
 
 	post {
 		always {
-			archiveArtifacts artifacts: "cypress/videos/**/*.mp4, cypress/screenshots/**/*.png", allowEmptyArchive: true
+			archiveArtifacts artifacts: "cypress/reports/**/*", allowEmptyArchive: true
+			publishHTML([
+				reportDir: 'cypress/reports',
+				reportFiles: 'mochawesome.html',
+				reportName: 'Cypress Report'
+			])
 		}
 	}
 }
