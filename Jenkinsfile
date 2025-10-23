@@ -6,25 +6,23 @@ pipeline {
 	}
 
 	stages {
-		stage('Debug Workspace') {
+		stage('Checkout') {
 			steps {
-				sh '''
-					pwd
-					ls -la
-				'''
+				checkout scm
 			}
 		}
+
 		stage('Run Cypress Tests') {
 			steps {
 				script {
-					def workspacePath = pwd()
+					def workspacePath = pwd()  // diretório do clone do GitHub
 					sh """
-						docker run --rm \\
-							-v "${workspacePath}:/e2e" \\
-							-w /e2e \\
-							${CYPRESS_IMAGE} \\
-							sh -c "npm ci && npx cypress run --reporter mochawesome --reporter-options 'reportDir=cypress/results,overwrite=false,html=false,json=true'"
-					"""
+                    docker run --rm \\
+                        -v "${workspacePath}:${workspacePath}" \\
+                        -w ${workspacePath} \\
+                        ${CYPRESS_IMAGE} \\
+                        sh -c "npm ci && npx cypress run --config-file ${workspacePath}/cypress.config.js --reporter mochawesome --reporter-options 'reportDir=cypress/results,overwrite=false,html=false,json=true'"
+                    """
 				}
 			}
 		}
