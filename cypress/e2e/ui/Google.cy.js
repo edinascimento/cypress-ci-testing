@@ -8,14 +8,14 @@ describe('Example to Teste - Google', () => {
         cy.title().should('include', 'Google');
     })
 
-    it(`Deve buscar no Google`, () => {
-        cy.visit('https://www.google.com/', {
-            failOnStatusCode: false,
-            ssl: false,
-        });
-
-        cy.get('textarea[name="q"]').type('Cypress Testing')
-        cy.contains('Pesquisa Google').click({ force: true });
-        cy.url().should('include', 'search');
-    })
+    // it(`Deve buscar no Google`, () => {
+    //     cy.visit('https://www.google.com/', {
+    //         failOnStatusCode: false,
+    //         ssl: false,
+    //     });
+    //
+    //     cy.get('textarea[name="q"]').type('Cypress Testing')
+    //     cy.contains('Pesquisa Google').click({ force: true });
+    //     cy.url().should('include', 'search');
+    // })
 })

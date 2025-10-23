@@ -37,9 +37,9 @@ pipeline {
 					def workspacePath = pwd()
 					sh """
                 docker run --rm \\
-                   -v "${workspacePath}/cypress/videos:/app/cypress/videos" \\
-                   -v "${workspacePath}/cypress/screenshots:/app/cypress/screenshots" \\
-                   ${CYPRESS_IMAGE}
+                   -v "${workspacePath}:/app" \\
+                   --entrypoint sh \\
+                   ${CYPRESS_IMAGE} -c "sh run_cypress.sh"
                 """
 				}
 			}
