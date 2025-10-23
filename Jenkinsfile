@@ -18,16 +18,9 @@ pipeline {
 					def workspacePath = pwd()
 					sh """
                     docker build -t cypress-ci-project-image \
-                        \"${workspacePath}\"
+                        "${workspacePath}"
                     """
 				}
-			}
-		}
-
-		stage('Debug Workspace') {
-			steps {
-				sh 'ls -la'
-				sh 'pwd'
 			}
 		}
 
@@ -37,11 +30,10 @@ pipeline {
 					def workspacePath = pwd()
 					sh """
                     docker run --rm \
-                        --entrypoint sh \
-                        -v \"${workspacePath}:/e2e\" \
+                        -v "${workspacePath}:/e2e" \
                         -w /e2e \
-                        cypress-ci-project-image \
-                        -c \"sh run_cypress.sh\"
+                        ${CYPRESS_IMAGE} \
+                        sh -c "npm ci && npm run test:ci"
                     """
 				}
 			}
@@ -50,7 +42,8 @@ pipeline {
 
 	post {
 		always {
-			archiveArtifacts artifacts: "cypress/videos/**, cypress/screenshots/**", allowEmptyArchive: true
+			archiveArtifacts artifacts: "cypress/videos/**/*.mp4, cypress/screenshots/**/*.png",
+			allowEmptyArchive: true
 		}
 	}
 }
