@@ -16,7 +16,7 @@ pipeline {
 
 		stage('Run Cypress Tests') {
 			steps {
-				sh 'docker run --rm -v $(pwd):/e2e cypress-tests:latest'
+				sh 'docker run --rm -v $(pwd)/cypress/videos:/e2e/cypress/videos -v $(pwd)/cypress/screenshots:/e2e/cypress/screenshots cypress-tests:latest'
 			}
 		}
 	}
