@@ -24,9 +24,9 @@ pipeline {
 		stage('Run Cypress Tests') {
 			steps {
 				script {
-					sh '''
+					sh """
                     docker run --rm -v ${WORKSPACE}:/e2e -w /e2e ${CYPRESS_IMAGE} sh -c "npm ci && npx cypress run --config-file /e2e/cypress.config.js --reporter mochawesome --reporter-options reportDir=cypress/results,overwrite=false,html=false,json=true"
-                '''
+                """
 				}
 			}
 		}
