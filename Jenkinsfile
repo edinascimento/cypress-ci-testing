@@ -1,38 +1,20 @@
 pipeline {
 	agent any
-
-	environment {
-		PROJECT_DIR = "cypress-ci-testing"
-		CYPRESS_IMAGE = "cypress/included:13.12.0"
-	}
-
 	stages {
-		stage('Checkout') {
+		stage("build") {
 			steps {
-				checkout scm
+				echo 'building de application'
 			}
 		}
-
-		stage('Run Cypress inside Docker') {
+		stage("test") {
 			steps {
-				script {
-					def workspacePath = pwd()
-					def escapedWorkspace = workspacePath.replaceAll(' ', '\\\\ ')
-					sh """
-					docker run --rm \\
-						-v "${escapedWorkspace}/${PROJECT_DIR}:/e2e" \\
-						-w /e2e \\
-						${CYPRESS_IMAGE} \\
-						sh -c "npm ci && npx cypress run --browser chrome --headless"
-					"""
-				}
+				echo 'testing the application...'
 			}
 		}
-	}
-
-	post {
-		always {
-			archiveArtifacts artifacts: "${PROJECT_DIR}/cypress/videos/**, ${PROJECT_DIR}/cypress/screenshots/**", allowEmptyArchive: true
+		stage("deploy") {
+			steps {
+				echo 'deploying the application...'
+			}
 		}
 	}
 }
