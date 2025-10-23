@@ -3,7 +3,6 @@ pipeline {
 
 	environment {
 		PROJECT_DIR = "cypress-ci-testing"
-		CYPRESS_IMAGE = "cypress/included:15.5.0"
 	}
 
 	stages {
@@ -16,7 +15,7 @@ pipeline {
 
 		stage('Run Cypress inside Docker') {
 			steps {
-				// Roda Cypress dentro do container usando shell
+				// Roda Cypress dentro de um container Docker
 				sh '''
                 docker run --rm \
                     --entrypoint sh \
@@ -31,7 +30,7 @@ pipeline {
 
 	post {
 		always {
-			// Arquiva vídeos e screenshots gerados pelo Cypress
+			// Salva vídeos e screenshots
 			archiveArtifacts artifacts: "${PROJECT_DIR}/cypress/videos/**, ${PROJECT_DIR}/cypress/screenshots/**", allowEmptyArchive: true
 		}
 	}
