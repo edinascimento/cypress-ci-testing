@@ -6,6 +6,12 @@ pipeline {
 	}
 
 	stages {
+		stage('Debug Workspace') {
+			steps {
+				ssh 'pwd'\
+					'ls -la'
+			}
+		}
 		stage('Run Cypress Tests') {
 			steps {
 				script {
