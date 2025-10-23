@@ -10,13 +10,13 @@ pipeline {
 
     stage('Run Cypress inside Docker') {
       steps {
-        sh '''
-          docker run --rm \
-            -v $PWD:/e2e \
-            -w /e2e \
-            cypress/included:13.12.0 \
-            npx cypress run --browser chrome --headless
-        '''
+		  sh '''
+			docker run --rm \
+			  -v "/var/jenkins_home/workspace/Cypress Tests:/e2e" \
+			  -w /e2e \
+			  cypress/included:13.12.0 \
+			  npx cypress run --browser chrome --headless
+			'''
       }
     }
   }
