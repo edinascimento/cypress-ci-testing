@@ -1,14 +1,14 @@
-FROM cypress/browsers:node-20.5.0-chrome-114.0.5735.133-1-ff-114.0.2-edge-114.0.1823.51-1
+FROM cypress/browsers:node-22.21.0-chrome-141.0.7390.107-1-ff-144.0-edge-141.0.3537.92-1
 
 WORKDIR /e2e
 
-COPY package*.json ./
-RUN npm install
-
 COPY . .
 
-# Opcional: instalar mochawesome globalmente
+RUN npm install
+
 RUN npm install -g mochawesome mochawesome-merge mochawesome-report-generator
 
-# Mantém flexível para passar argumentos
-CMD ["npx", "cypress", "run"]
+# Criar diretório de reports
+RUN mkdir -p cypress/reports
+
+CMD ["npx", "cypress", "run", "--reporter", "mochawesome", "--reporter-options", "reportDir=cypress/reports,overwrite=false,html=true,json=true"]
