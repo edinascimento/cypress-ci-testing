@@ -1,6 +1,10 @@
 pipeline {
 	agent any
 
+	environment {
+		CYPRESS_IMAGE = "cypress/included:15.5.0"
+	}
+
 	stages {
 		stage('Checkout') {
 			steps {
@@ -8,14 +12,33 @@ pipeline {
 			}
 		}
 
-		stage('Dependencies') {
-			ssh 'npm i'
+		stage('Build Docker Image') {
+			steps {
+				script {
+					def workspacePath = pwd()
+					sh """
+                    docker build -t cypress-ci-project-image \
+                        \"${workspacePath}\"
+                    """
+				}
+			}
 		}
 
-		stage('ci') {
-			ssh 'npm run test:ci'
+		stage('Run Cypress Tests') {
+			steps {
+				script {
+					def workspacePath = pwd()
+					sh """
+                    docker run --rm \
+                        --entrypoint sh \
+                        -v \"${workspacePath}:/e2e\" \
+                        -w /e2e \
+                        cypress-ci-project-image \
+                        -c \"sh run_cypress.sh\"
+                    """
+				}
+			}
 		}
-
 	}
 
 	post {
