@@ -6,12 +6,6 @@ pipeline {
 	}
 
 	stages {
-		stage('Install Dependencies') {
-			steps {
-				sh 'npm ci'
-			}
-		}
-
 		stage('Run Cypress Tests') {
 			steps {
 				script {
