@@ -1,47 +1,4 @@
-pipeline {
-	agent any
-
-	environment {
-		PROJECT_DIR = "cypress-ci-testing"
-	}
-
-	stages {
-		stage('Checkout') {
-			steps {
-				checkout scm
-			}
-		}
-
-		stage('Install Dependencies') {
-			steps {
-				sh "cd \$PROJECT_DIR && npm ci"
-			}
-		}
-
-		stage('Run Cypress Tests') {
-			steps {
-				sh """
-                cd \$PROJECT_DIR
-                npx cypress run \
-                    --browser chrome \
-                    --headless \
-                    --record=false
-             """
-			}
-		}
-	}
-
-	post {
-		always {
-			archiveArtifacts artifacts: "\${PROJECT_DIR}/cypress/videos/**/*.mp4, \${PROJECT_DIR}/cypress/screenshots/**/*.png",
-			allowEmptyArchive: true
-		}
-	}
-}
-
-✅ SOLUÇÃO 2: Com Docker (RECOMENDADO) ⭐
-Arquivo: Jenkinsfile_CORRIGIDO_DOCKER
-groovypipeline {
+peline {
 	agent any
 
 	environment {
