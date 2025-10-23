@@ -4,7 +4,7 @@ pipeline {
 	stages {
 		stage('Checkout') {
 			steps {
-				checkout scm
+				git branch: 'main', url: 'https://github.com/edinascimento/cypress-ci-testing.git'
 			}
 		}
 
@@ -16,7 +16,7 @@ pipeline {
 
 		stage('Run Cypress Tests') {
 			steps {
-				sh 'docker run --rm -v $(pwd)/cypress:/e2e/cypress cypress-tests:latest'
+				sh 'docker run --rm -v $(pwd):/e2e cypress-tests:latest'
 			}
 		}
 	}
