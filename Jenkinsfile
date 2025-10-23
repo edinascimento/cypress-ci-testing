@@ -2,15 +2,25 @@ pipeline {
 	agent any
 
 	stages {
-		stage('Dependencies') {
+		stage('Checkout') {
 			steps {
-				sh 'npm i'
+				checkout scm
 			}
 		}
-		stage(''){
-			steps {
-				sh 'npm run test:ci'
-			}
+
+		stage('Dependencies') {
+			ssh 'npm i'
+		}
+
+		stage('ci') {
+			ssh 'npm run test:ci'
+		}
+
+	}
+
+	post {
+		always {
+			archiveArtifacts artifacts: "cypress/videos/**, cypress/screenshots/**", allowEmptyArchive: true
 		}
 	}
 }
