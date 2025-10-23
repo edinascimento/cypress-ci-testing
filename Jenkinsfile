@@ -13,50 +13,23 @@ pipeline {
 			}
 		}
 
-		stage('Install with Docker') {
+		stage('Run Cypress inside Docker') {
 			steps {
+				// Roda Cypress dentro do container usando shell
 				sh """
-                cd \$PROJECT_DIR
                 docker run --rm \\
-                    -v "\$PWD:/e2e" \\
+                    -v "\$PWD/${PROJECT_DIR}:/e2e" \\
                     -w /e2e \\
                     \$CYPRESS_IMAGE \\
-                    npm ci
-             """
-			}
-		}
-
-		stage('Run Cypress Tests') {
-			steps {
-				sh """
-                cd \$PROJECT_DIR
-                docker run --rm \\
-                    -v "\$PWD:/e2e" \\
-                    -w /e2e \\
-                    \$CYPRESS_IMAGE \\
-                    npx cypress run \\
-                        --browser chrome \\
-                        --headless \\
-                        --record=false
-             """
-			}
-		}
-
-		stage('Report') {
-			steps {
-				sh """
-                cd \$PROJECT_DIR
-                echo "=== Vídeos ==="
-                ls -lh cypress/videos/ 2>/dev/null || echo "Sem vídeos"
-             """
+                    sh -c "npm ci && npx cypress run --browser chrome --headless"
+                """
 			}
 		}
 	}
 
 	post {
 		always {
-			archiveArtifacts artifacts: "\${PROJECT_DIR}/cypress/videos/**/*.mp4, \${PROJECT_DIR}/cypress/screenshots/**/*.png",
-			allowEmptyArchive: true
+			archiveArtifacts artifacts: "${PROJECT_DIR}/cypress/videos/**, ${PROJECT_DIR}/cypress/screenshots/**", allowEmptyArchive: true
 		}
 	}
 }
