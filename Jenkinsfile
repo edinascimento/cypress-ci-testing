@@ -1,29 +1,28 @@
 pipeline {
 	agent any
 
-	environment {
-		CYPRESS_IMAGE = "cypress/included:15.5.0"
-	}
-
 	stages {
 		stage('Checkout') {
 			steps {
-				git branch: 'main', url: 'https://github.com/edinascimento/cypress-ci-testing.git'
+				checkout scm
 			}
 		}
 
-		stage('Debug Workspace') {
+		stage('Build Cypress Image') {
 			steps {
-				sh '''
-                    pwd
-                    ls -la
-                '''
+				sh 'docker build -f Dockerfile -t cypress-tests:latest .'
 			}
 		}
 
 		stage('Run Cypress Tests') {
 			steps {
-				sh 'chmod +x ./run-cypress.sh && ./run-cypress.sh'
+				sh '''
+                docker run --rm \
+                  -v $(pwd):/e2e \
+                  -w /e2e \
+                  cypress-tests:latest \
+                  npx cypress run --config-file /e2e/cypress.config.js
+             '''
 			}
 		}
 	}
