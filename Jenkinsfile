@@ -8,7 +8,7 @@ pipeline {
 	stages {
 		stage('Debug Workspace') {
 			steps {
-				ssh '''
+				sh '''
 					pwd
 					ls -la
 				'''
