@@ -41,7 +41,7 @@ pipeline {
 					-v "${workspacePath}:/e2e" \
 					-w /e2e \
 					${CYPRESS_IMAGE} \
-					-c "sh run_cypress.sh"
+					-c 'sh run_cypress.sh'
                     """
 				}
 			}
@@ -50,7 +50,7 @@ pipeline {
 
 	post {
 		always {
-			archiveArtifacts artifacts: "${PROJECT_DIR}/cypress/videos/**, ${PROJECT_DIR}/cypress/screenshots/**", allowEmptyArchive: true
+			archiveArtifacts artifacts: "cypress/videos/**, cypress/screenshots/**", allowEmptyArchive: true
 		}
 	}
 }
