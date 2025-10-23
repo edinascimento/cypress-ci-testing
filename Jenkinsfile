@@ -2,7 +2,7 @@ pipeline {
 	agent any
 
 	environment {
-		PROJECT_DIR = "cypress-ci-project"
+		PROJECT_DIR = ""
 		CYPRESS_IMAGE = "cypress-ci-project-image" // nome da imagem que vamos buildar
 	}
 
@@ -25,7 +25,7 @@ pipeline {
 				script {
 					def workspacePath = pwd()
 					sh """
-                    docker build -t ${CYPRESS_IMAGE} "${workspacePath}/${PROJECT_DIR}"
+                    docker build -t ${CYPRESS_IMAGE} "${workspacePath}"
                     """
 				}
 			}
@@ -38,7 +38,7 @@ pipeline {
 					sh """
                     docker run --rm \\
                         --entrypoint sh \\
-                        -v '${workspacePath}/${PROJECT_DIR}:/e2e' \\
+                        -v '${workspacePath}:/e2e' \
                         -w /e2e \\
                         ${CYPRESS_IMAGE} \\
                         -c 'sh run_cypress.sh'
