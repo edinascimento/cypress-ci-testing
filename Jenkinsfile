@@ -17,13 +17,13 @@ pipeline {
 		stage('Run Cypress inside Docker') {
 			steps {
 				// Roda Cypress dentro do container usando shell
-				sh '''
-                docker run --rm \
-                    -v "$PWD/${PROJECT_DIR}:/e2e" \
-                    -w /e2e \
-                    $CYPRESS_IMAGE \
+				sh """
+                docker run --rm \\
+                    -v "\$PWD/${PROJECT_DIR}:/e2e" \\
+                    -w /e2e \\
+                    \$CYPRESS_IMAGE \\
                     sh -c "npm ci && npx cypress run --browser chrome --headless"
-                '''
+                """
 			}
 		}
 	}
