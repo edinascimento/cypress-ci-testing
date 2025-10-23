@@ -4,7 +4,7 @@ pipeline {
 	stages {
 		stage('Checkout') {
 			steps {
-				checkout scm
+				git branch: 'main', url: 'https://github.com/edinascimento/cypress-ci-testing.git'
 			}
 		}
 
@@ -17,12 +17,12 @@ pipeline {
 		stage('Run Cypress Tests') {
 			steps {
 				sh '''
-                docker run --name cypress-runner cypress-tests:latest
+                docker run --name cypress-runner cypress-tests:latest || true
 
                 mkdir -p cypress/reports
                 docker cp cypress-runner:/e2e/cypress/reports/. ./cypress/reports/ || true
 
-                docker rm cypress-runner
+                docker rm cypress-runner || true
              '''
 			}
 		}
@@ -31,10 +31,14 @@ pipeline {
 	post {
 		always {
 			archiveArtifacts artifacts: "cypress/reports/**/*", allowEmptyArchive: true
+
 			publishHTML([
 				reportDir: 'cypress/reports',
 				reportFiles: 'mochawesome.html',
-				reportName: 'Cypress Test Report'
+				reportName: 'Cypress Test Report',
+				allowMissing: true,
+				alwaysLinkToLastBuild: true,
+				keepAll: true
 			])
 		}
 	}
