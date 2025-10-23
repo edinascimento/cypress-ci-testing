@@ -4,7 +4,7 @@ pipeline {
 	stages {
 		stage('Checkout') {
 			steps {
-				git branch: 'main', url: 'https://github.com/edinascimento/cypress-ci-testing.git'
+				checkout scm
 			}
 		}
 
