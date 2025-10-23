@@ -15,7 +15,7 @@ describe('Example to Teste - Google', () => {
         });
 
         cy.get('textarea[name="q"]').type('Cypress Testing')
-        cy.contains('Pesquisa Google').click();
+        cy.contains('Pesquisa Google').click({ force: true });
         cy.url().should('include', 'search');
     })
 })
