@@ -1,3 +1,3 @@
 #!/bin/sh
 npm ci
-npx cypress run --browser electron --headless
+npm run test:ci
