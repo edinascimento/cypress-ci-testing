@@ -2,6 +2,15 @@ pipeline {
 	agent any
 
 	stages {
+		stage('Cleanup') {
+			steps {
+				sh '''
+                docker rm -f cypress-runner || true
+                docker rmi -f cypress-tests:latest || true
+             '''
+			}
+		}
+
 		stage('Checkout') {
 			steps {
 				git branch: 'main', url: 'https://github.com/edinascimento/cypress-ci-testing.git'
@@ -18,17 +27,24 @@ pipeline {
 			steps {
 				sh '''
                 echo "=== Starting Cypress Tests ==="
-                docker run --name cypress-runner cypress-tests:latest || true
+                docker run --name cypress-runner cypress-tests:latest
 
-                echo "=== Container finished, checking for reports ==="
-                docker exec cypress-runner ls -la /e2e/cypress/ || echo "Could not check /e2e/cypress"
+                echo "=== Checking container exit code ==="
+                docker inspect cypress-runner --format='{{.State.ExitCode}}'
+
+                echo "=== Container logs ==="
+                docker logs cypress-runner || true
+
+                echo "=== Listing /e2e/cypress contents ==="
+                docker run --rm -v cypress-runner:/data busybox ls -la /data/cypress/ || true
 
                 mkdir -p cypress/reports
-                echo "=== Copying reports ==="
-                docker cp cypress-runner:/e2e/cypress/reports/. ./cypress/reports/ || echo "No reports to copy"
+                docker cp cypress-runner:/e2e/cypress/reports/. ./cypress/reports/ || true
+                docker cp cypress-runner:/e2e/cypress/videos/. ./cypress/videos/ || true
+                docker cp cypress-runner:/e2e/cypress/screenshots/. ./cypress/screenshots/ || true
 
-                echo "=== Local reports directory ==="
-                ls -la cypress/reports/
+                echo "=== Local directory contents ==="
+                ls -laR cypress/
 
                 docker rm cypress-runner || true
              '''
@@ -38,7 +54,7 @@ pipeline {
 
 	post {
 		always {
-			archiveArtifacts artifacts: "cypress/reports/**/*", allowEmptyArchive: true
+			archiveArtifacts artifacts: "cypress/**/*", allowEmptyArchive: true
 			publishHTML([
 				reportDir: 'cypress/reports',
 				reportFiles: 'mochawesome.html',
