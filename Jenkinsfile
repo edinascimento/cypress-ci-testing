@@ -17,7 +17,9 @@ pipeline {
 		stage('Debug Container') {
 			steps {
 				sh '''
-                docker run --rm -v $(pwd):/e2e -w /e2e cypress-tests:latest ls -la /e2e
+                PWD=$(pwd)
+                echo "Current directory: $PWD"
+                docker run --rm -v $PWD:/e2e -w /e2e cypress-tests:latest ls -la /e2e
              '''
 			}
 		}
@@ -25,7 +27,8 @@ pipeline {
 		stage('Run Cypress Tests') {
 			steps {
 				sh '''
-                docker run --rm -v $(pwd):/e2e -w /e2e cypress-tests:latest npx cypress run
+                PWD=$(pwd)
+                docker run --rm -v $PWD:/e2e -w /e2e cypress-tests:latest npx cypress run
              '''
 			}
 		}
