@@ -3,7 +3,7 @@ pipeline {
 
 	environment {
 		PROJECT_DIR = "cypress-ci-testing"
-		CYPRESS_IMAGE = "cypress/included:13.12.0"
+		CYPRESS_IMAGE = "cypress/included:15.5.0"
 	}
 
 	stages {
@@ -22,7 +22,7 @@ pipeline {
                         -v '${workspacePath}/${PROJECT_DIR}:/e2e' \\
                         -w /e2e \\
                         ${CYPRESS_IMAGE} \\
-                        sh -c 'npm ci && npx cypress run --browser chrome --headless'
+                        ./run_cypress.sh
                     """
 				}
 			}
