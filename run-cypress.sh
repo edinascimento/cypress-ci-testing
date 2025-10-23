@@ -6,6 +6,4 @@ docker run --rm \
   -w /e2e \
   cypress/included:15.5.0 \
   npx cypress run \
-    --config-file=/e2e/cypress.config.js \
-    --reporter mochawesome \
-    --reporter-options reportDir=cypress/results,overwrite=false,html=false,json=true
+    --config-file /e2e/cypress.config.js
