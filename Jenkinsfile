@@ -15,14 +15,17 @@ pipeline {
 
 		stage('Run Cypress inside Docker') {
 			steps {
-				// Roda Cypress dentro do container usando shell
-				sh """
-                docker run --rm \\
-                    -v "\$PWD/${PROJECT_DIR}:/e2e" \\
-                    -w /e2e \\
-                    \$CYPRESS_IMAGE \\
-                    sh -c "npm ci && npx cypress run --browser chrome --headless"
-                """
+				script {
+					def workspacePath = pwd()
+					def escapedWorkspace = workspacePath.replaceAll(' ', '\\\\ ')
+					sh """
+					docker run --rm \\
+						-v "${escapedWorkspace}/${PROJECT_DIR}:/e2e" \\
+						-w /e2e \\
+						${CYPRESS_IMAGE} \\
+						sh -c "npm ci && npx cypress run --browser chrome --headless"
+					"""
+				}
 			}
 		}
 	}
