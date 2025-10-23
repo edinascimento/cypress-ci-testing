@@ -8,30 +8,30 @@ pipeline {
 	stages {
 		stage('Checkout') {
 			steps {
-				checkout scm
+				git branch: 'main', url: 'https://github.com/edinascimento/cypress-ci-testing.git'
 			}
 		}
 
 		stage('Debug Workspace') {
 			steps {
 				sh '''
-					pwd
-					ls -la
-				'''
+                    pwd
+                    ls -la
+                '''
 			}
 		}
 
 		stage('Run Cypress Tests') {
 			steps {
 				script {
-					def workspacePath = pwd()  // diretório do clone do GitHub
+					def workspacePath = pwd()
 					sh """
-					docker run --rm \\
-					  -v "${workspacePath}:/e2e" \\
-					  -w /e2e \\
-					  cypress/included:15.5.0 \\
-					  sh -c "npm ci && npx cypress run --config-file /e2e/cypress.config.js --reporter mochawesome --reporter-options 'reportDir=cypress/results,overwrite=false,html=false,json=true'"
-					"""
+                    docker run --rm \\
+                      -v "${workspacePath}:/e2e" \\
+                      -w /e2e \\
+                      ${CYPRESS_IMAGE} \\
+                      sh -c "npm ci && npx cypress run --config-file /e2e/cypress.config.js --reporter mochawesome --reporter-options 'reportDir=cypress/results,overwrite=false,html=false,json=true'"
+                    """
 				}
 			}
 		}
