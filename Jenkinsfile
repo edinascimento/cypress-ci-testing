@@ -18,7 +18,7 @@ pipeline {
 				script {
 					def workspacePath = pwd()
 					sh """
-                    docker build -t ${CYPRESS_IMAGE} ${workspacePath}/${PROJECT_DIR}
+                    docker build -t ${CYPRESS_IMAGE} "${workspacePath}/${PROJECT_DIR}"
                     """
 				}
 			}
