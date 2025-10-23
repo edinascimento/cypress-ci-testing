@@ -17,10 +17,12 @@ pipeline {
 		stage('Run Cypress Tests') {
 			steps {
 				sh '''
+                docker run --name cypress-runner cypress-tests:latest
+
                 mkdir -p cypress/reports
-                docker run --rm \
-                  -v $(pwd)/cypress/reports:/e2e/cypress/reports \
-                  cypress-tests:latest
+                docker cp cypress-runner:/e2e/cypress/reports/. ./cypress/reports/ || true
+
+                docker rm cypress-runner
              '''
 			}
 		}
@@ -32,7 +34,7 @@ pipeline {
 			publishHTML([
 				reportDir: 'cypress/reports',
 				reportFiles: 'mochawesome.html',
-				reportName: 'Cypress Report'
+				reportName: 'Cypress Test Report'
 			])
 		}
 	}
