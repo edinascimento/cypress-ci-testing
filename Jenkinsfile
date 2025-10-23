@@ -26,12 +26,12 @@ pipeline {
 				script {
 					def workspacePath = pwd()  // diretório do clone do GitHub
 					sh """
-                    docker run --rm \
-					  -v /var/jenkins_home/workspace/Cypress-ci-testing:/e2e \
-					  -w /e2e \
-					  cypress/included:15.5.0 \
+					docker run --rm \\
+					  -v "${workspacePath}:/e2e" \\
+					  -w /e2e \\
+					  cypress/included:15.5.0 \\
 					  sh -c "npm ci && npx cypress run --config-file /e2e/cypress.config.js --reporter mochawesome --reporter-options 'reportDir=cypress/results,overwrite=false,html=false,json=true'"
-                    """
+					"""
 				}
 			}
 		}
