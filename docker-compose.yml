@@ -1,0 +1,8 @@
+services:
+  e2e-chrome:
+    build: .
+    command: "-b chrome"
+
+  e2e-firefox:
+    build: .
+    command: "-b firefox -c video=false"

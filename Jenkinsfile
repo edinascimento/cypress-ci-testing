@@ -1,49 +1,48 @@
 pipeline {
-	agent any
-
-	environment {
-		CYPRESS_IMAGE = "cypress/included:15.5.0"
+	agent {
+		docker {
+			image 'cypress/included:15.5.0'
+			args '-u 0'
+		}
 	}
 
 	stages {
-		stage('Checkout') {
+		stage('Install Dependencies') {
 			steps {
-				checkout scm
-			}
-		}
-
-		stage('Build Docker Image') {
-			steps {
-				script {
-					def workspacePath = pwd()
-					sh """
-                    docker build -t cypress-ci-project-image \
-                        "${workspacePath}"
-                    """
-				}
+				sh 'npm ci'
 			}
 		}
 
 		stage('Run Cypress Tests') {
 			steps {
-				script {
-					def workspacePath = pwd()
-					sh """
-                    docker run --rm \
-                        -v "${workspacePath}:/e2e" \
-                        -w /e2e \
-                        ${CYPRESS_IMAGE} \
-                        sh -c "npm ci && npm run test:ci"
-                    """
-				}
+				sh 'npx cypress run --reporter mochawesome --reporter-options "reportDir=cypress/results,overwrite=false,html=false,json=true"'
 			}
 		}
 	}
 
 	post {
 		always {
-			archiveArtifacts artifacts: "cypress/videos/**/*.mp4, cypress/screenshots/**/*.png",
-			allowEmptyArchive: true
+			echo 'Pipeline finalizado.'
+			archiveArtifacts artifacts: "cypress/videos/**/*.mp4, cypress/screenshots/**/*.png", allowEmptyArchive: true
+		}
+		success {
+			script {
+				sh 'npm install -g mochawesome-merge mochawesome-report-generator'
+				sh 'mochawesome-merge cypress/results/*.json > mochawesome-report.json'
+				sh 'marge mochawesome-report.json'
+			}	
+			publishHTML([
+				allowMissing: false,
+				alwaysLinkToLastBuild: true,
+				keepAll: true,
+				reportDir: 'mochawesome-report',
+				reportFiles: 'index.html',
+				reportName: 'Mochawesome Report'
+			])
+			echo 'Testes concluídos com sucesso.'
+		}
+		failure {
+			echo 'Testes falharam.'
 		}
 	}
 }

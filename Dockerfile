@@ -1,19 +1,18 @@
-FROM cypress/included:15.5.0
+# Use an official Cypress image that includes Node.js and browsers
+FROM cypress/browsers:node-20.5.0-chrome-114.0.5735.133-1-ff-114.0.2-edge-114.0.1823.51-1
 
-# Criar diretórios e garantir permissões
-WORKDIR /app
-RUN mkdir -p cypress/videos cypress/screenshots \
-    && chmod -R 777 cypress
+# Create and set the working directory
+WORKDIR /e2e
 
-# Copiar arquivos do projeto
-COPY package.json package-lock.json ./
-COPY cypress.config.js .
-COPY cypress ./cypress
-COPY run_cypress.sh .
-RUN chmod +x run_cypress.sh
+# Copy package.json and install dependencies
+# This is an optimization to leverage Docker's layer caching
+COPY package*.json ./
+RUN npm install
 
-# Instalar dependências
-RUN npm ci
+# Copy all other project files
+COPY . .
 
-# Comando padrão
-CMD ["npm", "run", "test:ci"]
+# Specify the command to run the tests
+# The `cypress/browsers` images have `cypress run` as the default entrypoint
+# This means you can omit it in the `docker run` command
+ENTRYPOINT ["npx", "cypress", "run"]
