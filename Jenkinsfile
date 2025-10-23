@@ -24,6 +24,13 @@ pipeline {
 			}
 		}
 
+		stage('Debug Workspace') {
+			steps {
+				sh 'ls -la'
+				sh 'pwd'
+			}
+		}
+
 		stage('Run Cypress Tests') {
 			steps {
 				script {
