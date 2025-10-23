@@ -5,13 +5,11 @@ module.exports = defineConfig({
     setupNodeEvents(on, config) {
 
     },
-    viewportHeight: 1280,
-    viewPortHeight: 720,
+    viewportWidth: 1280,
+    viewportHeight: 720,
     chromeWebSecurity: false,
     video: true,
     screenshotOnRunFailure: true,
-    specPattern: 'cypress/e2e/**/*.cy.js',
-    webSecurity: true,
-    insecureSkipDomain: true,
+    specPattern: 'cypress/e2e/**/*.cy.{js,ts}',
   },
 });

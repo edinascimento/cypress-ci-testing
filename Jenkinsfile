@@ -2,8 +2,8 @@ pipeline {
 	agent any
 
 	environment {
-		PROJECT_DIR = "cypress-ci-testing"
-		CYPRESS_IMAGE = "cypress/included:15.5.0"
+		PROJECT_DIR = "cypress-ci-project"
+		CYPRESS_IMAGE = "cypress-ci-project-image" // nome da imagem que vamos buildar
 	}
 
 	stages {
@@ -13,16 +13,28 @@ pipeline {
 			}
 		}
 
-		stage('Run Cypress inside Docker') {
+		stage('Build Docker Image') {
+			steps {
+				script {
+					def workspacePath = pwd()
+					sh """
+                    docker build -t ${CYPRESS_IMAGE} ${workspacePath}/${PROJECT_DIR}
+                    """
+				}
+			}
+		}
+
+		stage('Run Cypress Tests') {
 			steps {
 				script {
 					def workspacePath = pwd()
 					sh """
                     docker run --rm \\
+                        --entrypoint sh \\
                         -v '${workspacePath}/${PROJECT_DIR}:/e2e' \\
                         -w /e2e \\
                         ${CYPRESS_IMAGE} \\
-                        ./run_cypress.sh
+                        -c 'sh run_cypress.sh'
                     """
 				}
 			}
