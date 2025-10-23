@@ -1,0 +1,28 @@
+FROM jenkins/jenkins:lts
+
+# Trocar para root para instalar pacotes
+USER root
+
+# Instalar Node.js, npm e Docker CLI
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    nodejs \
+    npm \
+    docker.io \
+    git \
+    curl \
+    wget \
+    ca-certificates \
+    sudo && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# Criar workspace do Cypress e ajustar permissões
+RUN mkdir -p /var/jenkins_home/workspace && \
+    chown -R jenkins:jenkins /var/jenkins_home/workspace
+
+# Voltar para usuário Jenkins
+USER jenkins
+
+# Entrypoint padrão
+ENTRYPOINT ["/usr/local/bin/jenkins.sh"]
