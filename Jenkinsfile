@@ -1,29 +1,36 @@
 pipeline {
-  agent any
+	agent any
 
-  stages {
-    stage('Checkout') {
-      steps {
-        checkout scm
-      }
-    }
+	environment {
+		PROJECT_DIR = "cypress-ci-testing"
+	}
 
-    stage('Run Cypress inside Docker') {
-      steps {
-		  sh '''
-			docker run --rm \
-			  -v "/var/jenkins_home/workspace/Cypress Tests:/e2e" \
-			  -w /e2e \
-			  cypress/included:13.12.0 \
-			  npx cypress run --browser chrome --headless
-			'''
-      }
-    }
-  }
+	stages {
+		stage('Checkout') {
+			steps {
+				// Clona o repositório
+				checkout scm
+			}
+		}
 
-  post {
-    always {
-      archiveArtifacts artifacts: 'cypress/videos/**, cypress/screenshots/**', allowEmptyArchive: true
-    }
-  }
+		stage('Run Cypress inside Docker') {
+			steps {
+				// Roda Cypress dentro de um container Docker
+				sh '''
+                docker run --rm \
+                    -v "$PWD/${PROJECT_DIR}:/e2e" \
+                    -w /e2e \
+                    cypress/included:15.5.0 \
+                    sh -c "npm ci && npx cypress run --browser chrome --headless"
+                '''
+			}
+		}
+	}
+
+	post {
+		always {
+			// Salva vídeos e screenshots
+			archiveArtifacts artifacts: "${PROJECT_DIR}/cypress/videos/**, ${PROJECT_DIR}/cypress/screenshots/**", allowEmptyArchive: true
+		}
+	}
 }
